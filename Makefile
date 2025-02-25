@@ -6,8 +6,9 @@ VERSION = 1.4.3
 GIT_HASH := $(shell git rev-parse --short HEAD || echo 'development')
 CURRENT_TIME = $(shell date +"%Y-%m-%d:T%H:%M:%S")
 LD_FLAGS = '-s -X main.date=${CURRENT_TIME} -X main.version=${VERSION} -X main.commit=${GIT_HASH}'
+GOBIN = go
 
-EXECUTABLES = go npm
+EXECUTABLES = $(GOBIN) npm
 K := $(foreach exec,$(EXECUTABLES),\
         $(if $(shell which $(exec)),some string,$(error "No $(exec) in PATH")))
 
@@ -44,7 +45,7 @@ SVELTE_SRC = $(wildcard $(FRONTEND)/src/*.svelte)                 \
 
 $(TARGET): $(VAR) $(CFG) $(SVELTE_TARGETS)
 	$(info ===>  BUILD cc-backend)
-	@go build -ldflags=${LD_FLAGS} ./cmd/cc-backend
+	$(GOBIN) build -ldflags=${LD_FLAGS} ./cmd/cc-backend
 
 frontend:
 	$(info ===>  BUILD frontend)
@@ -52,16 +53,16 @@ frontend:
 
 swagger:
 	$(info ===>  GENERATE swagger)
-	@go run github.com/swaggo/swag/cmd/swag init -d ./internal/api,./pkg/schema -g rest.go -o ./api
+	$(GOBIN) run github.com/swaggo/swag/cmd/swag init -d ./internal/api,./pkg/schema -g rest.go -o ./api
 	@mv ./api/docs.go ./internal/api/docs.go
 
 graphql:
 	$(info ===>  GENERATE graphql)
-	@go run github.com/99designs/gqlgen
+	$(GOBIN) run github.com/99designs/gqlgen
 
 clean:
 	$(info ===>  CLEAN)
-	@go clean
+	$(GOBIN) clean
 	@rm -f $(TARGET)
 
 distclean:
@@ -72,10 +73,10 @@ distclean:
 
 test:
 	$(info ===>  TESTING)
-	@go clean -testcache
-	@go build ./...
-	@go vet ./...
-	@go test ./...
+	$(GOBIN) clean -testcache
+	$(GOBIN) build ./...
+	$(GOBIN) vet ./...
+	$(GOBIN) test ./...
 
 tags:
 	$(info ===>  TAGS)
