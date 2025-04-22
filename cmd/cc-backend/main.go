@@ -108,8 +108,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	repository.Connect(config.Keys.DBDriver, config.Keys.DB)
-
 	if flagInit {
 		initEnv()
 		fmt.Print("Successfully setup environment!\n")
@@ -117,6 +115,8 @@ func main() {
 		fmt.Print("Add your job-archive at ./var/job-archive.\n")
 		os.Exit(0)
 	}
+
+	repository.Connect(config.Keys.DBDriver, config.Keys.DB)
 
 	if !config.Keys.DisableAuthentication {
 
